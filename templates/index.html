@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Homepage</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <nav class="navbar navbar-dark bg-dark">
+    <div class="container-fluid">
+      <span class="navbar-brand mb-0 h1">Sistema de Monitoramento</span>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-2 bg-light sidebar py-3">
+        <button class="btn btn-primary w-100 mb-2" onclick="location.reload()">Atualizar</button>
+        <a href="/backup" class="btn btn-secondary w-100">Backup Database</a>
+      </div>
+
+      <div class="col-md-10 py-3">
+        <h3>Registros</h3>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Data-Hora</th>
+              <th>Transcrição</th>
+              <th>Áudio</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-registros">
+            <!-- Linhas injetadas via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    fetch('/dados')
+      .then(res => res.json())
+      .then(data => {
+        const tbody = document.getElementById('tabela-registros');
+        data.forEach(registro => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${registro.data_hora}</td>
+            <td>${registro.transcricao}</td>
+            <td>
+              <audio controls>
+                <source src="${registro.audio}" type="audio/mpeg">
+                Seu navegador não suporta áudio.
+              </audio>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      });
+  </script>
+
+</body>
+</html>

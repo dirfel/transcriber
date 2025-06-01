@@ -18,3 +18,37 @@ def criar_tabelas():
 
     conn.commit()
     conn.close()
+
+def inserir_transcricao(filename, texto):
+    conn = conectar_banco()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT INTO transcriptions (filename, transcription)
+        VALUES (?, ?);
+    """, (filename, texto))
+
+    conn.commit()
+    conn.close()
+
+def atualizar_transcricao(id, novo_texto):
+    conn = conectar_banco()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE transcriptions
+        SET transcription = ?
+        WHERE id = ?;
+    """, (novo_texto, id))
+
+    conn.commit()
+    conn.close()
+
+
+def remover_transcricao(id):
+    conn = conectar_banco()
+    cursor = conn.cursor()
+
+    cursor.execute("DELETE FROM transcriptions WHERE id = ?;", (id,))
+    conn.commit()
+    conn.close()

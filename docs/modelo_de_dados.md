@@ -1,23 +1,27 @@
-# Modelo de Dados: Transcriber
+# Modelo de Dados
 
-## Entidade: `transcriptions`
+Este documento descreve a estrutura do banco de dados relacional utilizado no sistema Transcriber.
 
-Tabela responsável por armazenar os arquivos transcritos.
+## Entidades
 
-| Campo       | Tipo       | Descrição                                |
-|-------------|------------|------------------------------------------|
-| `id`        | INTEGER    | Identificador único (chave primária)     |
-| `filename`  | TEXT       | Nome do arquivo de áudio                 |
-| `transcription` | TEXT   | Texto transcrito                         |
-| `created_at`| TIMESTAMP  | Data/hora da criação da transcrição      |
+### Transcriptions
+Armazena as transcrições de arquivos de áudio.
 
-## Restrições
+| Campo        | Tipo     | Restrições                        | Descrição                         |
+|--------------|----------|-----------------------------------|------------------------------------|
+| `id`         | INTEGER  | PRIMARY KEY, AUTOINCREMENT       | Identificador único da transcrição |
+| `filename`   | TEXT     | NOT NULL                         | Nome do arquivo de áudio original  |
+| `transcription` | TEXT  | NOT NULL                         | Texto transcrito do áudio          |
+| `created_at` | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP        | Data e hora da transcrição         |
 
-- `filename` e `transcription` são obrigatórios (`NOT NULL`)
-- `id` é gerado automaticamente (`AUTOINCREMENT`)
-- A data de criação é atribuída automaticamente (`DEFAULT CURRENT_TIMESTAMP`)
+## Relacionamentos
+Atualmente, o sistema possui apenas uma tabela. Futuras versões podem incluir:
 
-## Futuras Expansões
+- Usuários que realizam transcrições
+- Logs de atividade
+- Histórico de alterações
 
-- Adicionar campo `language` para suportar multilinguagem
-- Relacionar com tabela de usuários (para autenticação)
+## Regras e Restrições
+
+- Um `filename` não pode estar vazio.
+- A `transcription` deve ser preenchida com o conteúdo resultante da transcrição automática ou manual.

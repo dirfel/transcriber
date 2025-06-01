@@ -1,51 +1,40 @@
-import csv
-import os
+import sqlite3
 
-class DatabaseCSV:
-    def __init__(self, filename='database.csv'):
-        self.filename = filename
-        self.fieldnames = ['data-hora', 'transcrição', 'caminho_audio']
-        if not os.path.exists(self.filename):
-            with open(self.filename, mode='w', newline='', encoding='utf-8') as file:
-                writer = csv.DictWriter(file, fieldnames=self.fieldnames)
-                writer.writeheader()
+class DatabaseManager:
+    def __init__(self, db_name="transcriber.db"):
+        self.conn = sqlite3.connect(db_name)
+        self.create_table()
 
-    def read_all(self):
-        with open(self.filename, newline='', encoding='utf-8') as file:
-            return list(csv.DictReader(file))
+    def create_table(self):
+        query = """
+        CREATE TABLE IF NOT EXISTS transcriptions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            filename TEXT NOT NULL,
+            transcription TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        """
+        self.conn.execute(query)
+        self.conn.commit()
 
-    def add_entry(self, data_hora, transcricao, caminho_audio):
-        with open(self.filename, mode='a', newline='', encoding='utf-8') as file:
-            writer = csv.DictWriter(file, fieldnames=self.fieldnames)
-            writer.writerow({
-                'data-hora': data_hora,
-                'transcrição': transcricao,
-                'caminho_audio': caminho_audio
-            })
+    def insert_transcription(self, filename, transcription):
+        query = "INSERT INTO transcriptions (filename, transcription) VALUES (?, ?);"
+        self.conn.execute(query, (filename, transcription))
+        self.conn.commit()
 
-    def update_entry(self, index, data_hora=None, transcricao=None, caminho_audio=None):
-        registros = self.read_all()
-        if 0 <= index < len(registros):
-            if data_hora is not None:
-                registros[index]['data-hora'] = data_hora
-            if transcricao is not None:
-                registros[index]['transcrição'] = transcricao
-            if caminho_audio is not None:
-                registros[index]['caminho_audio'] = caminho_audio
-            self._write_all(registros)
-            return True
-        return False
+    def update_transcription(self, transcription_id, new_text):
+        query = "UPDATE transcriptions SET transcription = ? WHERE id = ?;"
+        self.conn.execute(query, (new_text, transcription_id))
+        self.conn.commit()
 
-    def delete_entry(self, index):
-        registros = self.read_all()
-        if 0 <= index < len(registros):
-            registros.pop(index)
-            self._write_all(registros)
-            return True
-        return False
+    def delete_transcription(self, transcription_id):
+        query = "DELETE FROM transcriptions WHERE id = ?;"
+        self.conn.execute(query, (transcription_id,))
+        self.conn.commit()
 
-    def _write_all(self, registros):
-        with open(self.filename, mode='w', newline='', encoding='utf-8') as file:
-            writer = csv.DictWriter(file, fieldnames=self.fieldnames)
-            writer.writeheader()
-            writer.writerows(registros)
+    def get_all_transcriptions(self):
+        cursor = self.conn.execute("SELECT * FROM transcriptions;")
+        return cursor.fetchall()
+
+    def close(self):
+        self.conn.close()

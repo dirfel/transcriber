@@ -1,6 +1,8 @@
 from flask import Flask, render_template, jsonify, send_file, request
 import csv
 from utils import salvar_audio_validado
+from database import criar_tabelas, inserir_transcricao
+criar_tabelas()
 
 
 app = Flask(__name__)

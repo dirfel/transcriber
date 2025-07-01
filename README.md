@@ -1,6 +1,7 @@
 # Transcriber
 
 Sistema simples de transcrição de arquivos de áudio com persistência em banco de dados relacional (SQLite).
+[![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-lightgrey?logo=github&style=for-the-badge)](https://github.com/sponsors/dirfel)
 
 ## 📌 Objetivo
 
